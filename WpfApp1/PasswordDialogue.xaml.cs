@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+
+namespace WpfApp1
+{
+    /// <summary>
+    /// Interaction logic for PasswordDialogue.xaml
+    /// </summary>
+    public partial class PasswordDialogue : Window
+    {
+        public PasswordDialogue()
+        {
+            InitializeComponent();
+        }
+
+        public string PasswordResponse
+        {
+            get { return PasswordBox.Password; }
+            set { PasswordBox.Password = value; }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+        }
+    }
+}

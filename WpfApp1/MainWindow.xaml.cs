@@ -64,7 +64,19 @@ namespace WpfApp1
                 dialog.TextResponse = text;
                 if (dialog.ShowDialog() == true)
                 {
-                    Note noteToEdit = user.Notes.First(n => n.Title == title);
+                    Note noteToEdit = user.Notes.FirstOrDefault(n => n.Title == title);
+
+                    if (user.Notes.Any(n => n.Title == dialog.TitleResponse))
+                    {
+                        MessageBox.Show("A note with this title already exists. Please choose a different title.");
+                        return;
+                    }
+
+                    if (noteToEdit != null && string.IsNullOrEmpty(dialog.TitleResponse))
+                    {
+                        RemoveNoteFromUserData(user, noteToEdit);
+                    }
+
                     if (noteToEdit != null)
                     {
                         noteToEdit.Title = dialog.TitleResponse;
@@ -79,8 +91,8 @@ namespace WpfApp1
                         SaveUserDataToJson(user);
                         RefreshNoteStack(user);
                     }
-                }
-            };
+                    }
+                };
 
             button.Content = textblock;
             textblock.Text = title + " - " + date + " \n\n " + text;
@@ -96,7 +108,7 @@ namespace WpfApp1
                 {
                     if (NoteStack.Children.Count > 0)
                     {
-                        int IndexToAddTo = NoteStack.Children.Count - 1;
+                        int IndexToAddTo = NoteStack.Children.Count;
                         NoteStack.Children.Insert(IndexToAddTo, addNewNote(i.Title, i.Text, i.Date));
                     }
                     else
@@ -111,6 +123,11 @@ namespace WpfApp1
             var dialog = new NoteEditor();
             if (dialog.ShowDialog() == true)
             {
+                if (user.Notes.Any(n => n.Title == dialog.TitleResponse))
+                {
+                    MessageBox.Show("A note with this title already exists. Please choose a different title.");
+                    return;
+                }
                 AddNoteToUserData(user, dialog.TitleResponse, dialog.TextResponse, DateTimeOffset.Now);
                 RefreshNoteStack(user);
             }
@@ -148,14 +165,12 @@ namespace WpfApp1
         {
             List<UserData> existingUsers = new();
 
-            // Read existing data if the file exists
             if (File.Exists(fileName))
             {
                 string existingJson = File.ReadAllText(fileName);
                 existingUsers = JsonSerializer.Deserialize<List<UserData>>(existingJson) ?? new List<UserData>();
             }
 
-            // Update or add the current user
             var existingUser = existingUsers.FirstOrDefault(u => u.Name == user.Name);
             if (existingUser != null)
             {
@@ -163,7 +178,6 @@ namespace WpfApp1
             }
             existingUsers.Add(user);
 
-            // Serialize and write back to the file
             string json = JsonSerializer.Serialize(existingUsers, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(fileName, json);
         }

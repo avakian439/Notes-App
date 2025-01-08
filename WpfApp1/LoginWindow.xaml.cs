@@ -49,6 +49,18 @@ namespace WpfApp1
             var dialog = new NewUserDialogue();
             if (dialog.ShowDialog() == true)
             {
+                if (dialog.UsernameResponse == null)
+                {
+                    MessageBox.Show("Username cannot be empty.");
+                    return;
+                }
+
+                if (dialog.PasswordResponse == null)
+                {
+                    MessageBox.Show("Password cannot be empty.");
+                    return;
+                }
+
                 List<UserData> existingUsers = new();
                 if (File.Exists(FileName))
                 {

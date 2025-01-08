@@ -57,17 +57,28 @@ namespace WpfApp1
                 }
 
                 var username = dialog.UsernameResponse;
-                username = username.ToLower();
                 var user = existingUsers.Find(x => x.Name == username);
                 if (user != null)
                 {
-                    if (user.Password == dialog.PasswordResponse && lastClickedButton != null)
+                    if (user.Password == dialog.PasswordResponse)
                     {
                         existingUsers.Remove(user);
                         string JsonString = JsonSerializer.Serialize(existingUsers, new JsonSerializerOptions { WriteIndented = true });
                         File.WriteAllText(FileName, JsonString);
-                            
-                        lastClickedButton.Content = null;
+
+                        foreach (var child in AccountStack.Children)
+                        {
+                            if (child is Button button)
+                            {
+                                var buttonUsername = ((Label)((Grid)button.Content).Children[1]).Content.ToString();
+                                if (buttonUsername == username)
+                                {
+                                    AccountStack.Children.Remove(button);
+                                    break;
+                                }
+                            }
+                        }
+
                         AccountStack.Children.Remove(lastClickedButton);
                         AccountLoginButton.IsEnabled = false;
                         lastClickedButton = null;

@@ -66,12 +66,6 @@ namespace WpfApp1
                 {
                     Note noteToEdit = user.Notes.FirstOrDefault(n => n.Title == title);
 
-                    if (user.Notes.Any(n => n.Title == dialog.TitleResponse))
-                    {
-                        MessageBox.Show("A note with this title already exists. Please choose a different title.");
-                        return;
-                    }
-
                     if (noteToEdit != null && string.IsNullOrEmpty(dialog.TitleResponse))
                     {
                         RemoveNoteFromUserData(user, noteToEdit);
